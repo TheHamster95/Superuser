@@ -26,11 +26,18 @@ In Eclipse, import Widgets/Widgets and Superuser/Superuser. It should Just Work 
 
 ## Ant
 
-Same old, same old.
-
 * $ mkdir /path/to/src
 * $ cd /path/to/src
 * $ cd Superuser/Superuser
+
+In this directory, create a file called local.properties. This file is used by ant for custom properties. You need to specify the location of the ndk directory:
+
+```
+ndk.dir=/Users/koush/src/android-ndk
+```
+
+Then you can build:
+
 * $ ant release
 
 Outputs:
@@ -40,6 +47,8 @@ Outputs:
 * libs/x86/su - x86 su binary
 
 ## Building the su binary
+
+You can use ant as shown above, to build the binary, but it can also be built without building the APK.
 
 Make sure you have the android-ndk downloaded with the tool "ndk-build" in your path.
 

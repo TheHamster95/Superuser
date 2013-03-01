@@ -47,6 +47,7 @@ public class PolicyFragmentInternal extends ListContentFragmentInternal {
     }
     
     void load() {
+        clear();
         final ArrayList<UidPolicy> policies = SuDatabaseHelper.getPolicies(getActivity());
         
         for (UidPolicy up: policies) {
@@ -67,11 +68,13 @@ public class PolicyFragmentInternal extends ListContentFragmentInternal {
         
         load();
 
-        ImageView watermark = (ImageView)view.findViewById(R.id.watermark);
-        if (watermark != null)
-            watermark.setImageResource(R.drawable.clockwork512);
-        if (!isPaged())
-            showAllLogs();
+        if ("com.koushikdutta.superuser".equals(getContext().getPackageName())) {
+            ImageView watermark = (ImageView)view.findViewById(R.id.watermark);
+            if (watermark != null)
+                watermark.setImageResource(R.drawable.clockwork512);
+            if (!isPaged())
+                showAllLogs();
+        }
     }
     
 
@@ -100,20 +103,6 @@ public class PolicyFragmentInternal extends ListContentFragmentInternal {
 
     FragmentInterfaceWrapper setContentNative(final ListItem li, final UidPolicy up) {
         LogNativeFragment l = new LogNativeFragment();
-//        {
-//            @Override
-//            void onDelete() {
-//                super.onDelete();
-//                removeItem(li);
-//                showAllLogs();
-//            }
-//
-//            @Override
-//            public void onConfigurationChanged(Configuration newConfig) {
-//                super.onConfigurationChanged(newConfig);
-//                setContent(li, up);
-//            }
-//        };
         l.getInternal().setUidPolicy(up);
         if (up != null) {
             Bundle args = new Bundle();
@@ -122,32 +111,21 @@ public class PolicyFragmentInternal extends ListContentFragmentInternal {
             args.putInt("desiredUid", up.desiredUid);
             l.setArguments(args);
         }
+        l.getInternal().setListContentId(getFragment().getId());
         return l;
     }
     
     void setContent(final ListItem li, final UidPolicy up) {
         if (getActivity() instanceof FragmentActivity) {
-            LogFragment l = new LogFragment() {
-                @Override
-                void onDelete() {
-                    super.onDelete();
-                    removeItem(li);
-                    showAllLogs();
-                }
-
-                @Override
-                public void onConfigurationChanged(Configuration newConfig) {
-                    super.onConfigurationChanged(newConfig);
-                    setContent(li, up);
-                }
-            };
+            LogFragment l = new LogFragment();
             l.getInternal().setUidPolicy(up);
+            l.getInternal().setListContentId(getFragment().getId());
             mContent = l;
         }
         else {
             mContent = setContentNative(li, up);
         }
-
+        
         setContent(mContent, up == null, up == null ? getString(R.string.logs) : up.getName());
     }
     
